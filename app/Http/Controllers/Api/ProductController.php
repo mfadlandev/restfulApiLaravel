@@ -97,8 +97,15 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,category_id',
             'price' => 'required|numeric',
             'stock' => 'required|integer',
-            'img' => 'nullable|string'
+            'img' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
         ]);
+
+        $path = "";
+        //mengambil file image dari request img
+        if ($request->hasFile('img')) {
+            // menyimpan file image ke storage pada folder products di disk public
+            $path = $request->file('img')->store('products', 'public');
+        }
         // Update the product
         $product->update([
             'name' => $request->name,
@@ -106,7 +113,7 @@ class ProductController extends Controller
             'category_id' => $request->category_id,
             'price' => $request->price,
             'stock' => $request->stock,
-            'img' => $request->img,
+            'img' => $path,
             'slug' => Str::slug($request->name) // Generate slug from name
         ]);
         return new ProductResource($product);
