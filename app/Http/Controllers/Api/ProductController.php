@@ -16,7 +16,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        // Mengambil produk beserta kategori
+        // Mengambil produk beserta kategori 
         $query = Product::with('category');
 
         // Filter berdasarkan kategori
