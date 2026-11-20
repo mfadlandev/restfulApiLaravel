@@ -14,11 +14,36 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         DB::table('categories')->insert([
-            ['category' => 'Elektronik', 'created_at' => now(), 'updated_at' => now()],
-            ['category' => 'Fashion', 'created_at' => now(), 'updated_at' => now()],
-            ['category' => 'Makanan & Minuman', 'created_at' => now(), 'updated_at' =>
-            now()],
-            ['category' => 'Olahraga', 'created_at' => now(), 'updated_at' => now()],
+            [
+                'category' => 'Coffee',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'category' => 'Non Coffee',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'category' => 'Tea',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'category' => 'Frappe',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'category' => 'Pastry',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'category' => 'Dessert',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }
