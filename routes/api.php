@@ -12,10 +12,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::apiResource('products', ProductController::class)->middleware('auth:sanctum');
+Route::apiResource('categories', CategoryController::class)->middleware('auth:sanctum');
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-
-// Route::apiResource('products', ProductController::class);
-Route::apiResource('categories', CategoryController::class);
-Route::apiResource('banjars', BanjarController::class);
