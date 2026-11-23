@@ -13,37 +13,42 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('categories')->insert([
-            [
-                'category' => 'Coffee',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'category' => 'Non Coffee',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'category' => 'Tea',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'category' => 'Frappe',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'category' => 'Pastry',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'category' => 'Dessert',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
+        $outlets = DB::table('outlets')->get();
+
+        foreach ($outlets as $outlet) {
+            DB::table('categories')->insert([
+                // COFFEE
+                [
+                    'outlet_id' => $outlet->id,
+                    'category' => 'Coffee',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+
+                // NON COFFEE
+                [
+                    'outlet_id' => $outlet->id,
+                    'category' => 'Non Coffee',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+
+                // FOOD
+                [
+                    'outlet_id' => $outlet->id,
+                    'category' => 'Food',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+
+                // SNACK
+                [
+                    'outlet_id' => $outlet->id,
+                    'category' => 'Snack',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+            ]);
+        }
     }
 }

@@ -14,304 +14,99 @@ class ProductSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('products')->insert([
-            // COFFEE (category_id: 1)
-            [
-                'name' => 'Espresso',
-                'slug' => Str::slug('Espresso'),
-                'description' => 'Kopi espresso murni dengan cita rasa kuat dan aroma khas kopi.',
-                'category_id' => 1,
-                'price' => 18000,
-                'img' => 'products/espresso.jpg',
-                'stock' => 30,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Americano',
-                'slug' => Str::slug('Americano'),
-                'description' => 'Espresso yang dicampur air panas dengan rasa kopi yang ringan.',
-                'category_id' => 1,
-                'price' => 20000,
-                'img' => 'products/americano.jpg',
-                'stock' => 25,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Cappuccino',
-                'slug' => Str::slug('Cappuccino'),
-                'description' => 'Perpaduan espresso, susu steamed, dan foam susu yang lembut.',
-                'category_id' => 1,
-                'price' => 25000,
-                'img' => 'products/cappuccino.jpg',
-                'stock' => 20,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Cafe Latte',
-                'slug' => Str::slug('Cafe Latte'),
-                'description' => 'Espresso dengan campuran susu creamy dan foam tipis.',
-                'category_id' => 1,
-                'price' => 25000,
-                'img' => 'products/latte.jpg',
-                'stock' => 20,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Caramel Macchiato',
-                'slug' => Str::slug('Caramel Macchiato'),
-                'description' => 'Kombinasi espresso, susu, dan sirup karamel.',
-                'category_id' => 1,
-                'price' => 30000,
-                'img' => 'products/caramel-macchiato.jpg',
-                'stock' => 15,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Mocha',
-                'slug' => Str::slug('Mocha'),
-                'description' => 'Perpaduan espresso, susu, dan cokelat.',
-                'category_id' => 1,
-                'price' => 28000,
-                'img' => 'products/mocha.jpg',
-                'stock' => 18,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+        $outlets = DB::table('outlets')->get();
 
-            // NON COFFEE (category_id: 2)
-            [
-                'name' => 'Chocolate Milk',
-                'slug' => Str::slug('Chocolate Milk'),
-                'description' => 'Minuman cokelat dengan susu segar.',
-                'category_id' => 2,
-                'price' => 23000,
-                'img' => 'products/chocolate-milk.jpg',
-                'stock' => 20,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Matcha Latte',
-                'slug' => Str::slug('Matcha Latte'),
-                'description' => 'Minuman matcha dengan campuran susu segar.',
-                'category_id' => 2,
-                'price' => 27000,
-                'img' => 'products/matcha-latte.jpg',
-                'stock' => 20,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Red Velvet Latte',
-                'slug' => Str::slug('Red Velvet Latte'),
-                'description' => 'Minuman red velvet dengan susu creamy.',
-                'category_id' => 2,
-                'price' => 26000,
-                'img' => 'products/red-velvet.jpg',
-                'stock' => 15,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Taro Milk',
-                'slug' => Str::slug('Taro Milk'),
-                'description' => 'Minuman susu dengan rasa taro yang lembut.',
-                'category_id' => 2,
-                'price' => 24000,
-                'img' => 'products/taro-milk.jpg',
-                'stock' => 18,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+        foreach ($outlets as $outlet) {
 
-            // TEA (category_id: 3)
-            [
-                'name' => 'Lemon Tea',
-                'slug' => Str::slug('Lemon Tea'),
-                'description' => 'Teh segar dengan perpaduan rasa lemon.',
-                'category_id' => 3,
-                'price' => 18000,
-                'img' => 'products/lemon-tea.jpg',
-                'stock' => 25,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Lychee Tea',
-                'slug' => Str::slug('Lychee Tea'),
-                'description' => 'Teh dengan aroma dan rasa buah leci.',
-                'category_id' => 3,
-                'price' => 22000,
-                'img' => 'products/lychee-tea.jpg',
-                'stock' => 20,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Thai Tea',
-                'slug' => Str::slug('Thai Tea'),
-                'description' => 'Teh khas Thailand dengan susu dan rasa manis.',
-                'category_id' => 3,
-                'price' => 22000,
-                'img' => 'products/thai-tea.jpg',
-                'stock' => 20,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Peach Tea',
-                'slug' => Str::slug('Peach Tea'),
-                'description' => 'Teh segar dengan rasa buah persik.',
-                'category_id' => 3,
-                'price' => 20000,
-                'img' => 'products/peach-tea.jpg',
-                'stock' => 20,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+            $coffee = DB::table('categories')
+                ->where('outlet_id', $outlet->id)
+                ->where('category', 'Coffee')
+                ->value('category_id');
 
-            // FRAPPE (category_id: 4)
-            [
-                'name' => 'Oreo Frappe',
-                'slug' => Str::slug('Oreo Frappe'),
-                'description' => 'Minuman blended dengan susu dan biskuit Oreo.',
-                'category_id' => 4,
-                'price' => 30000,
-                'img' => 'products/oreo-frappe.jpg',
-                'stock' => 15,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Caramel Frappe',
-                'slug' => Str::slug('Caramel Frappe'),
-                'description' => 'Minuman blended dengan rasa karamel.',
-                'category_id' => 4,
-                'price' => 32000,
-                'img' => 'products/caramel-frappe.jpg',
-                'stock' => 15,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Chocolate Frappe',
-                'slug' => Str::slug('Chocolate Frappe'),
-                'description' => 'Minuman cokelat dingin dengan tekstur creamy.',
-                'category_id' => 4,
-                'price' => 30000,
-                'img' => 'products/chocolate-frappe.jpg',
-                'stock' => 15,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Vanilla Frappe',
-                'slug' => Str::slug('Vanilla Frappe'),
-                'description' => 'Minuman blended dengan rasa vanilla.',
-                'category_id' => 4,
-                'price' => 28000,
-                'img' => 'products/vanilla-frappe.jpg',
-                'stock' => 15,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+            $nonCoffee = DB::table('categories')
+                ->where('outlet_id', $outlet->id)
+                ->where('category', 'Non Coffee')
+                ->value('category_id');
 
-            // PASTRY (category_id: 5)
-            [
-                'name' => 'Butter Croissant',
-                'slug' => Str::slug('Butter Croissant'),
-                'description' => 'Pastry berlapis dengan tekstur renyah dan aroma butter.',
-                'category_id' => 5,
-                'price' => 18000,
-                'img' => 'products/croissant.jpg',
-                'stock' => 15,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Chocolate Croissant',
-                'slug' => Str::slug('Chocolate Croissant'),
-                'description' => 'Croissant dengan isian cokelat.',
-                'category_id' => 5,
-                'price' => 22000,
-                'img' => 'products/chocolate-croissant.jpg',
-                'stock' => 12,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Cheese Danish',
-                'slug' => Str::slug('Cheese Danish'),
-                'description' => 'Pastry lembut dengan isian keju.',
-                'category_id' => 5,
-                'price' => 24000,
-                'img' => 'products/cheese-danish.jpg',
-                'stock' => 10,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Cinnamon Roll',
-                'slug' => Str::slug('Cinnamon Roll'),
-                'description' => 'Roti gulung dengan aroma kayu manis dan glaze manis.',
-                'category_id' => 5,
-                'price' => 22000,
-                'img' => 'products/cinnamon-roll.jpg',
-                'stock' => 12,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+            $food = DB::table('categories')
+                ->where('outlet_id', $outlet->id)
+                ->where('category', 'Food')
+                ->value('category_id');
 
-            // DESSERT (category_id: 6)
-            [
-                'name' => 'Chocolate Brownies',
-                'slug' => Str::slug('Chocolate Brownies'),
-                'description' => 'Brownies cokelat lembut dengan tekstur fudgy.',
-                'category_id' => 6,
-                'price' => 22000,
-                'img' => 'products/brownies.jpg',
-                'stock' => 12,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Cheesecake',
-                'slug' => Str::slug('Cheesecake'),
-                'description' => 'Kue keju lembut dengan tekstur creamy.',
-                'category_id' => 6,
-                'price' => 28000,
-                'img' => 'products/cheesecake.jpg',
-                'stock' => 10,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Tiramisu',
-                'slug' => Str::slug('Tiramisu'),
-                'description' => 'Dessert berlapis dengan perpaduan kopi dan krim.',
-                'category_id' => 6,
-                'price' => 30000,
-                'img' => 'products/tiramisu.jpg',
-                'stock' => 10,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Red Velvet Cake',
-                'slug' => Str::slug('Red Velvet Cake'),
-                'description' => 'Kue red velvet dengan lapisan cream cheese.',
-                'category_id' => 6,
-                'price' => 28000,
-                'img' => 'products/red-velvet-cake.jpg',
-                'stock' => 10,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
+            $snack = DB::table('categories')
+                ->where('outlet_id', $outlet->id)
+                ->where('category', 'Snack')
+                ->value('category_id');
+
+            DB::table('products')->insert([
+                // COFFEE
+                [
+                    'outlet_id' => $outlet->id,
+                    'name' => 'Espresso',
+                    'slug' => $outlet->id . '-' . Str::slug('Espresso'),
+                    'description' => 'Kopi espresso murni dengan cita rasa kuat dan aroma khas kopi.',
+                    'category_id' => $coffee,
+                    'price' => 18000,
+                    'img' => 'products/espresso.jpg',
+                    'stock' => 30,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+                [
+                    'outlet_id' => $outlet->id,
+                    'name' => 'Cafe Latte',
+                    'slug' => $outlet->id . '-' . Str::slug('Cafe Latte'),
+                    'description' => 'Perpaduan espresso dan susu yang lembut.',
+                    'category_id' => $coffee,
+                    'price' => 22000,
+                    'img' => 'products/cafe-latte.jpg',
+                    'stock' => 25,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+
+                // NON COFFEE
+                [
+                    'outlet_id' => $outlet->id,
+                    'name' => 'Matcha Latte',
+                    'slug' => $outlet->id . '-' . Str::slug('Matcha Latte'),
+                    'description' => 'Minuman matcha dengan susu.',
+                    'category_id' => $nonCoffee,
+                    'price' => 25000,
+                    'img' => 'products/matcha-latte.jpg',
+                    'stock' => 20,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+
+                // FOOD
+                [
+                    'outlet_id' => $outlet->id,
+                    'name' => 'Chicken Rice',
+                    'slug' => $outlet->id . '-' . Str::slug('Chicken Rice'),
+                    'description' => 'Nasi dengan ayam pilihan.',
+                    'category_id' => $food,
+                    'price' => 28000,
+                    'img' => 'products/chicken-rice.jpg',
+                    'stock' => 20,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+
+                // SNACK
+                [
+                    'outlet_id' => $outlet->id,
+                    'name' => 'French Fries',
+                    'slug' => $outlet->id . '-' . Str::slug('French Fries'),
+                    'description' => 'Kentang goreng renyah.',
+                    'category_id' => $snack,
+                    'price' => 15000,
+                    'img' => 'products/french-fries.jpg',
+                    'stock' => 30,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+            ]);
+        }
     }
 }
