@@ -8,76 +8,108 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        // Get all products with their category
-        $categories = Category::all();
-        return $categories;
+        $user = $request->user();
+
+        $query = Category::query();
+
+        if ($user->role->name !== 'admin_pusat') {
+            $query->where('outlet_id', $user->outlet_id);
+        }
+
+        return response()->json($query->get());
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
+        $user = $request->user();
+
         $validated = $request->validate([
-            'category' => 'required|string|max:150',
+            'outlet_id' => 'required|exists:outlets,id',
+            'category' => 'required|string|max:100',
         ]);
 
-        $categories = Category::create($validated);
+        // Admin outlet hanya boleh membuat kategori di outlet sendiri
+        if ($user->role->name !== 'admin_pusat') {
+            $validated['outlet_id'] = $user->outlet_id;
+        }
+
+        $category = Category::create([
+            'outlet_id' => $validated['outlet_id'],
+            'category' => $validated['category'],
+        ]);
 
         return response()->json([
             'message' => 'Kategori berhasil ditambahkan',
-            'data' => $categories
+            'data' => $category
         ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Request $request, string $id)
     {
-        $category = Category::findOrFail($id);
+        $user = $request->user();
+
+        $query = Category::query();
+
+        if ($user->role->name !== 'admin_pusat') {
+            $query->where('outlet_id', $user->outlet_id);
+        }
+
+        $category = $query->findOrFail($id);
 
         return response()->json([
             'message' => 'Detail kategori',
             'data' => $category
-        ], 200);
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
-        $validated = $request->validate([
-            'category' => 'required|string|max:150',
-        ]);
+        $user = $request->user();
 
-        $category = Category::findOrFail($id);
+        $query = Category::query();
+
+        if ($user->role->name !== 'admin_pusat') {
+            $query->where('outlet_id', $user->outlet_id);
+        }
+
+        $category = $query->findOrFail($id);
+
+        $validated = $request->validate([
+            'category' => 'required|string|max:100',
+        ]);
 
         $category->update($validated);
 
         return response()->json([
             'message' => 'Kategori berhasil diperbarui',
             'data' => $category
-        ], 200);
+        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
-        $category = Category::findOrFail($id);
+        $user = $request->user();
+
+        $query = Category::query();
+
+        if ($user->role->name !== 'admin_pusat') {
+            $query->where('outlet_id', $user->outlet_id);
+        }
+
+        $category = $query->findOrFail($id);
+
+        if ($category->products()->exists()) {
+            return response()->json([
+                'message' => 'Kategori masih memiliki produk dan tidak bisa dihapus.'
+            ], 422);
+        }
 
         $category->delete();
 
         return response()->json([
             'message' => 'Kategori berhasil dihapus'
-        ], 200);
+        ]);
     }
 }

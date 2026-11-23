@@ -1,136 +1,185 @@
 <?php
 
-
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductResource;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
-        // Mengambil produk beserta kategori 
+        $user = $request->user();
+
         $query = Product::with('category');
 
-        // Filter berdasarkan kategori
+        // Admin pusat bisa melihat semua outlet
+        if ($user->role->name !== 'admin_pusat') {
+            $query->where('outlet_id', $user->outlet_id);
+        }
+
+        // Filter kategori
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
         }
 
-        // Pencarian berdasarkan nama produk
+        // Pencarian produk
         if ($request->filled('keyword')) {
             $query->where('name', 'like', '%' . $request->keyword . '%');
         }
 
-        // Mengatur jumlah produk per halaman
         $limit = $request->input('limit', 10);
 
-        // Pagination
         $products = $query->paginate($limit);
 
         return ProductResource::collection($products);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        // Validate the request
-        $request->validate([
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'outlet_id' => 'required|exists:outlets,id',
             'name' => 'required|string|max:150',
             'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,category_id',
-            'price' => 'required|numeric',
-            'stock' => 'required|integer',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
             'img' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
-        // Initialize image path
-        $path = "";
-        //mengambil file image dari request img
+
+        // Admin outlet hanya boleh membuat produk di outlet sendiri
+        if ($user->role->name !== 'admin_pusat') {
+            $validated['outlet_id'] = $user->outlet_id;
+        }
+
+        // Pastikan kategori berasal dari outlet yang sama
+        $category = Category::where(
+            'category_id',
+            $validated['category_id']
+        )->where('outlet_id', $validated['outlet_id'])->firstOrFail();
+
+        $path = null;
+
         if ($request->hasFile('img')) {
-            // menyimpan file image ke storage pada folder products di disk public
             $path = $request->file('img')->store('products', 'public');
         }
-        // Create the product
+
+        $slug = Str::slug($validated['name']);
+
+        // Slug unik per outlet
+        $slug = $slug . '-' . $validated['outlet_id'] . '-' . Str::random(5);
+
         $product = Product::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'category_id' => $request->category_id,
-            'price' => $request->price,
-            'stock' => $request->stock,
-            //hanya menyimpan path image ke database
+            'outlet_id' => $validated['outlet_id'],
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? null,
+            'category_id' => $category->category_id,
+            'price' => $validated['price'],
+            'stock' => $validated['stock'],
             'img' => $path,
-            'slug' => Str::slug($request->name) // Generate slug from name
+            'slug' => $slug,
         ]);
-        return new ProductResource($product);
+
+        return new ProductResource($product->load('category'));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Request $request, string $id)
     {
-        $product = Product::with('category')->findOrFail($id);
+        $user = $request->user();
+
+        $query = Product::with('category');
+
+        if ($user->role->name !== 'admin_pusat') {
+            $query->where('outlet_id', $user->outlet_id);
+        }
+
+        $product = $query->findOrFail($id);
+
         return new ProductResource($product);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
-        // Find the product
-        $product = Product::findOrFail($id);
-        // Validate the request
-        // Validate the request
-        $request->validate([
+        $user = $request->user();
+
+        $query = Product::query();
+
+        if ($user->role->name !== 'admin_pusat') {
+            $query->where('outlet_id', $user->outlet_id);
+        }
+
+        $product = $query->findOrFail($id);
+
+        $validated = $request->validate([
             'name' => 'required|string|max:150',
             'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,category_id',
-            'price' => 'required|numeric',
-            'stock' => 'required|integer',
-            'img' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'img' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $path = "";
-        //mengambil file image dari request img
+        // Kategori harus berasal dari outlet produk
+        Category::where('category_id', $validated['category_id'])
+            ->where('outlet_id', $product->outlet_id)
+            ->firstOrFail();
+
+        $path = $product->img;
+
         if ($request->hasFile('img')) {
-            // menyimpan file image ke storage pada folder products di disk public
+            if ($product->img) {
+                Storage::disk('public')->delete($product->img);
+            }
+
             $path = $request->file('img')->store('products', 'public');
         }
-        // Update the product
+
         $product->update([
-            'name' => $request->name,
-            'description' => $request->description,
-            'category_id' => $request->category_id,
-            'price' => $request->price,
-            'stock' => $request->stock,
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? null,
+            'category_id' => $validated['category_id'],
+            'price' => $validated['price'],
+            'stock' => $validated['stock'],
             'img' => $path,
-            'slug' => Str::slug($request->name) // Generate slug from name
         ]);
-        return new ProductResource($product);
+
+        return new ProductResource($product->load('category'));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
-        // Find and delete the product
-        $product = Product::find($id);
-        if ($product != null) {
-            $product->delete();
-            return response()->json(['message' => 'Product deleted successfully']);
+        $user = $request->user();
+
+        $query = Product::query();
+
+        if ($user->role->name !== 'admin_pusat') {
+            $query->where('outlet_id', $user->outlet_id);
         }
-        // Return a success response
-        return response()->json(['message' => 'Product not found'], 404);
+
+        $product = $query->findOrFail($id);
+
+        // Jangan hapus produk yang sudah masuk riwayat transaksi
+        if ($product->transactionDetails()->exists()) {
+            return response()->json([
+                'message' => 'Produk sudah digunakan dalam transaksi dan tidak bisa dihapus.'
+            ], 422);
+        }
+
+        if ($product->img) {
+            Storage::disk('public')->delete($product->img);
+        }
+
+        $product->delete();
+
+        return response()->json([
+            'message' => 'Product deleted successfully'
+        ]);
     }
 }
