@@ -44,4 +44,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Transaction::class);
     }
+
+    public function hasAnyRole(array $roles)
+    {
+        return in_array($this->role?->name, $roles);
+    }
 }

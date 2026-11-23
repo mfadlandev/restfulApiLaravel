@@ -18,9 +18,11 @@ class CheckRole
         }
 
         // Periksa apakah role pengguna sesuai
-        if (!$request->user()->hasRole($role)) {
+        $roles = explode(',', $role);
+
+        if (!$request->user()->hasAnyRole($roles)) {
             return response()->json([
-                'message' => 'Forbidden'
+                'message' => 'Forbidden',
             ], 403);
         }
 
