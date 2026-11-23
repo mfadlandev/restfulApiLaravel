@@ -7,11 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 class Category extends Model
 {
     protected $primaryKey = 'category_id';
-    //fields yang boleh diisi massal
-    protected $fillable = ['category'];
+
+    protected $fillable = [
+        'outlet_id',
+        'category',
+    ];
+
+    public function outlet()
+    {
+        return $this->belongsTo(Outlet::class);
+    }
+
     public function products()
     {
-        // relasi ke tabel products
-        return $this->hasMany(Product::class, 'category_id');
+        return $this->hasMany(Product::class);
     }
 }
