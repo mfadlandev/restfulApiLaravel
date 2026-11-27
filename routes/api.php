@@ -1,32 +1,10 @@
 <?php
 
-// use App\Http\Controllers\Api\CategoryController;
-// use App\Http\Controllers\Api\ProductController;
-// use App\Http\Controllers\AuthController;
-// use Illuminate\Http\Request;
-// use Illuminate\Support\Facades\Route;
-
-// Route::get('/user', function (Request $request) {
-//     return $request->user();
-// })->middleware('auth:sanctum');
-
-// Route::apiResource('products', ProductController::class)->middleware('auth:sanctum');
-// Route::apiResource('categories', CategoryController::class)->middleware('auth:sanctum');
-
-
-// Route::post('/login', [AuthController::class, 'login']);
-
-// // Protected routes
-// Route::middleware('auth:sanctum')->group(function () {
-//     Route::get('/profile', [AuthController::class, 'profile']);
-//     Route::post('/logout', [AuthController::class, 'logout']);
-// });
-
-
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\OutletController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\AuthController;
+use App\Http\Middleware\CheckRole;
 use Illuminate\Support\Facades\Route;
 
 
@@ -34,7 +12,10 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
-Route::middleware(['auth:sanctum', 'role:admin_pusat'])->group(function () {
+Route::middleware([
+    'auth:sanctum',
+    CheckRole::class . ':admin_pusat',
+])->group(function () {
     Route::apiResource('outlets', OutletController::class);
 });
 
